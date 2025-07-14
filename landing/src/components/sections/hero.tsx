@@ -61,20 +61,20 @@ export const Hero = () => {
                 in TypeScript
               </span>
             </h1>
-            {/* <p className="mt-8 mb-4 max-w-md">
-              Effect makes it easy to build typed, robust & scalable applications. Lorem ipsum dolor sit amet consectetur. Augue vitae rutrum felis neque
-              auctor justo euismod.
-            </p> */}
-            {/* TODO re-enable above and div below */}
+            <p className="mt-8 mb-4 max-w-md text-zinc-300">
+              Effect is a TypeScript library that provides a unified runtime for building robust, scalable applications. 
+              It eliminates runtime errors through typed error handling and offers powerful tools for concurrency, 
+              dependency injection, and observability.
+            </p>
             <div className="md:hidden my-8">
               <Video />
             </div>
             <Checklist
               items={[
-                "Maximum Type-safety (incl. error handling)",
-                "Makes your code more composable, reusable and testable",
-                "Extensive library with a rich ecosystem of packages",
-                "Clustering and Workflows (Alpha)"
+                "Maximum Type-safety with structured error handling",
+                "Composable, reusable code with dependency injection",
+                "Rich ecosystem: HTTP, databases, validation, CLI tools",
+                "Built-in observability with tracing and metrics"
               ]}
             />
             <div className="mt-10 flex flex-col sm:flex-row items-start gap-3">
