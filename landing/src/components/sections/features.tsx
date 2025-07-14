@@ -47,7 +47,7 @@ export const Features = () => {
             errors as typed values, making them explicit and recoverable. No more 
             unhandled exceptions bringing down your application.
           </p>
-          <Checklist items={['Errors tracked at compile-time in type system', 'Automatic retry with exponential backoff', 'Built-in circuit breakers and timeouts']} />
+          <Checklist items={['Errors tracked at compile-time in type system', 'Configurable retry policies (exponential, fibonacci, etc.)', 'Built-in circuit breakers and timeouts']} />
           <Button href="/docs" secondary className="mt-10">
             Learn error handling
           </Button>
