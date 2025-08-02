@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Effect - TypeScript for Production Systems</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-black: #000000;
+            --bg-primary: #0A0A0A;
+            --bg-secondary: #141414;
+            --border: #262626;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A3A3A3;
+            --text-tertiary: #737373;
+            --accent-green: #22C55E;
+            --accent-red: #EF4444;
+            --code-bg: #0F0F0F;
+            --code-border: #1F1F1F;
+        }
+
+        body {
+            background: var(--bg-black);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 64px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            padding: 0 32px;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .version-badge {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .version-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent-green);
+            border-radius: 50%;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            padding: 128px 32px 64px;
+            display: flex;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 45% 55%;
+            gap: 64px;
+            align-items: center;
+        }
+
+        .hero-left h1 {
+            font-size: 56px;
+            line-height: 1.1;
+            font-weight: 100;
+            letter-spacing: -0.02em;
+            margin-bottom: 24px;
+        }
+
+        .hero-left p {
+            font-size: 20px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 480px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .btn-primary {
+            background: var(--text-primary);
+            color: var(--bg-black);
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary {
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border: 1px solid var(--border);
+            background: transparent;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-primary);
+        }
+
+        .trust-indicators {
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+        .trust-indicators strong {
+            color: var(--text-secondary);
+        }
+
+        /* Graph Visualization */
+        .graph-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        #complexityGraph {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Interactive Examples */
+        .examples-section {
+            padding: 96px 32px;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border);
+        }
+
+        .section-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 200;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .example-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .example-card:hover {
+            border-color: #333;
+            transform: scale(1.02);
+        }
+
+        .example-card.running {
+            border-color: var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        .example-card h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-tertiary);
+        }
+
+        .status-dot.success {
+            background: var(--accent-green);
+        }
+
+        .status-dot.error {
+            background: var(--accent-red);
+        }
+
+        /* Problem Section */
+        .problem-section {
+            padding: 96px 32px;
+            position: relative;
+        }
+
+        .problem-background {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 200px;
+            font-weight: 900;
+            color: var(--bg-primary);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .problem-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .terminal {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 8px;
+            padding: 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+        }
+
+        .terminal-line {
+            margin-bottom: 8px;
+            opacity: 0;
+            animation: typeIn 0.5s forwards;
+        }
+
+        .terminal-line:nth-child(1) { animation-delay: 0.5s; }
+        .terminal-line:nth-child(2) { animation-delay: 1s; }
+        .terminal-line:nth-child(3) { animation-delay: 1.5s; }
+        .terminal-line:nth-child(4) { animation-delay: 2s; }
+        .terminal-line:nth-child(5) { animation-delay: 2.5s; }
+
+        @keyframes typeIn {
+            to { opacity: 1; }
+        }
+
+        .prompt {
+            color: var(--text-tertiary);
+        }
+
+        .error {
+            color: var(--accent-red);
+        }
+
+        /* Benefits Section */
+        .benefits-section {
+            padding: 96px 32px;
+            background: var(--bg-primary);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .benefit-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 32px;
+            transition: all 0.2s;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-green);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.1);
+        }
+
+        .benefit-card h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .check {
+            color: var(--accent-green);
+        }
+
+        .benefit-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* State of JS Section */
+        .state-of-js-section {
+            padding: 96px 32px;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border);
+        }
+
+        .state-grid {
+            display: grid;
+            grid-template-columns: 45% 55%;
+            gap: 64px;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .state-title {
+            font-size: 48px;
+            font-weight: 200;
+            line-height: 1.2;
+            margin-bottom: 24px;
+        }
+
+        .highlight {
+            color: var(--accent-green);
+            font-weight: 400;
+        }
+
+        .state-description {
+            font-size: 18px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .state-source {
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+        .source-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-bottom: 1px solid var(--text-tertiary);
+            transition: all 0.2s;
+        }
+
+        .source-link:hover {
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        .state-stats {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+        }
+
+        .state-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .effect-badge {
+            background: var(--accent-green);
+            color: var(--bg-black);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .state-header h3 {
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .feature-name {
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+
+        .feature-bar {
+            position: relative;
+            height: 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .feature-progress {
+            height: 100%;
+            background: var(--accent-green);
+            border-radius: 4px;
+            position: relative;
+            animation: progressFill 1.5s ease-out forwards;
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        @keyframes progressFill {
+            to {
+                transform: scaleX(1);
+            }
+        }
+
+        .feature-item:nth-child(1) .feature-progress { animation-delay: 0.2s; }
+        .feature-item:nth-child(2) .feature-progress { animation-delay: 0.4s; }
+        .feature-item:nth-child(3) .feature-progress { animation-delay: 0.6s; }
+        .feature-item:nth-child(4) .feature-progress { animation-delay: 0.8s; }
+        .feature-item:nth-child(5) .feature-progress { animation-delay: 1s; }
+
+        .feature-percent {
+            position: absolute;
+            right: -40px;
+            top: -6px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Technical Foundation Section */
+        .technical-section {
+            padding: 96px 32px;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border);
+        }
+
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 48px;
+            margin-top: 48px;
+        }
+
+        .pillar {
+            text-align: left;
+        }
+
+        .pillar h3 {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            position: relative;
+            padding-bottom: 12px;
+        }
+
+        .pillar h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: var(--accent-green);
+        }
+
+        .pillar p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .pillar pre {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+        }
+
+        .pillar code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-primary);
+        }
+
+        .docs-link {
+            color: var(--accent-green);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .docs-link:hover {
+            color: #16a34a;
+        }
+
+        /* Video Section */
+        .video-section {
+            padding: 96px 32px;
+            background: var(--bg-black);
+        }
+
+        .video-container {
+            max-width: 900px;
+            margin: 48px auto;
+            aspect-ratio: 16 / 9;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .video-placeholder:hover {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+        }
+
+        .play-button {
+            margin-bottom: 32px;
+            transition: transform 0.3s;
+        }
+
+        .video-placeholder:hover .play-button {
+            transform: scale(1.1);
+        }
+
+        .play-button svg {
+            filter: drop-shadow(0 4px 20px rgba(34, 197, 94, 0.3));
+        }
+
+        .video-info {
+            text-align: center;
+        }
+
+        .video-info h3 {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .video-info p {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .video-cta {
+            text-align: center;
+            margin-top: 32px;
+        }
+
+        .video-cta p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* Embed state - when video is loaded */
+        .video-container.playing .video-placeholder {
+            display: none;
+        }
+
+        .video-embed {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            padding: 96px 32px;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid var(--border);
+            padding: 24px 0;
+        }
+
+        .faq-question {
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: color 0.2s;
+        }
+
+        .faq-question:hover {
+            color: var(--accent-green);
+        }
+
+        .faq-answer {
+            margin-top: 16px;
+            color: var(--text-secondary);
+            display: none;
+        }
+
+        .faq-item.open .faq-answer {
+            display: block;
+        }
+
+        .faq-item.open .faq-question::after {
+            transform: rotate(45deg);
+        }
+
+        .faq-question::after {
+            content: '+';
+            font-size: 24px;
+            transition: transform 0.2s;
+        }
+
+        /* AI Section */
+        .ai-section {
+            padding: 96px 32px;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border);
+        }
+
+        .ai-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            margin: 48px 0;
+            align-items: center;
+        }
+
+        .ai-features h3 {
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 24px;
+            color: var(--text-secondary);
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 12px 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bullet {
+            color: var(--accent-green);
+            font-size: 20px;
+        }
+
+        /* AI Pipeline Visualization */
+        .ai-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pipeline-visualization {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 40px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .pipeline-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            animation: fadeInScale 0.5s forwards;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .node-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s;
+        }
+
+        .pipeline-node:hover .node-icon {
+            border-color: var(--accent-green);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);
+        }
+
+        .node-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .pipeline-arrow {
+            color: var(--text-tertiary);
+            font-size: 24px;
+        }
+
+        /* AI Testimonials */
+        .ai-testimonials {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .testimonial-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+
+        .testimonial-card:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+        }
+
+        .testimonial-card p {
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .podcast-link {
+            color: var(--accent-green);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .podcast-link:hover {
+            color: #16a34a;
+        }
+
+        /* AI Leverage Section */
+        .ai-leverage-section {
+            padding: 96px 32px;
+            background: var(--bg-black);
+            border-top: 1px solid var(--border);
+        }
+
+        .ai-leverage-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            margin-top: 48px;
+        }
+
+        .ai-leverage-features h3 {
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 24px;
+            color: var(--text-secondary);
+        }
+
+        .ai-benefits {
+            margin-top: 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .ai-benefit {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .benefit-icon {
+            font-size: 24px;
+            color: var(--accent-green);
+            flex-shrink: 0;
+        }
+
+        .ai-benefit h4 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .ai-benefit p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .ai-code-demo {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+        }
+
+        .ai-code-demo h3 {
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 1024px) {
+            .ai-leverage-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Production Section */
+        .production-section {
+            padding: 96px 32px;
+        }
+
+        .production-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin: 48px 0;
+        }
+
+        .production-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 32px;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .production-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-green);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.1);
+        }
+
+        .company-name {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .use-case {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .talk-link {
+            color: var(--accent-green);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .talk-link:hover {
+            color: #16a34a;
+        }
+
+        /* Company Logos */
+        .company-logos {
+            margin-top: 64px;
+            text-align: center;
+        }
+
+        .company-logos p {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 24px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .logo-placeholder {
+            height: 60px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .logo-placeholder:hover {
+            border-color: var(--text-tertiary);
+        }
+
+        /* Trust Indicators Section */
+        .trust-section {
+            padding: 96px 32px;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .testimonial {
+            position: relative;
+            padding: 32px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .testimonial:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-green);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.1);
+        }
+
+        .testimonial blockquote {
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin: 0 0 16px 0;
+            quotes: """ """ "'" "'";
+        }
+
+        .testimonial blockquote::before {
+            content: open-quote;
+            color: var(--accent-green);
+            font-size: 48px;
+            line-height: 0;
+            vertical-align: -20px;
+            margin-right: 8px;
+        }
+
+        .testimonial cite {
+            display: block;
+            font-style: normal;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Social Proof Bar */
+        .social-proof-bar {
+            padding: 64px 32px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .metrics {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 96px;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 96px 32px;
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(34, 197, 94, 0.1), transparent);
+        }
+
+        .cta-section h2 {
+            font-size: 48px;
+            font-weight: 200;
+            margin-bottom: 16px;
+        }
+
+        .cta-section p {
+            font-size: 20px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-left h1 {
+                font-size: 40px;
+            }
+            
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .graph-container {
+                height: 300px;
+            }
+            
+            .ai-content {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+            
+            .pipeline-visualization {
+                flex-direction: column;
+                gap: 16px;
+                padding: 24px;
+            }
+            
+            .pipeline-arrow {
+                transform: rotate(90deg);
+            }
+            
+            .ai-testimonials {
+                grid-template-columns: 1fr;
+            }
+            
+            .production-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+            
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics {
+                flex-direction: column;
+                gap: 48px;
+            }
+            
+            .metric-number {
+                font-size: 36px;
+            }
+            
+            .problem-background {
+                font-size: 120px;
+            }
+            
+            .pillars-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+            
+            .video-container {
+                margin: 32px auto;
+            }
+            
+            .video-info h3 {
+                font-size: 20px;
+            }
+            
+            .play-button svg {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .state-grid {
+                grid-template-columns: 1fr;
+                gap: 48px;
+            }
+            
+            .state-title {
+                font-size: 36px;
+            }
+            
+            .state-description {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-content">
+            <div class="nav-links">
+                <strong>Effect</strong>
+                <a href="#">Docs</a>
+                <a href="#">Examples</a>
+                <a href="#">Community</a>
+            </div>
+            <div class="nav-links">
+                <span class="version-badge">v3.10.18</span>
+                <a href="#">GitHub</a>
+                <a href="#">Discord</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-left">
+                <h1>TypeScript for engineers building production-grade systems</h1>
+                <p>A batteries-included toolkit for async workflows, typed errors, dependency injection, observability, and more—for AI, infra, and everything in between.</p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn-primary">Get Started →</a>
+                    <a href="#" class="btn-secondary">Community</a>
+                </div>
+                <div class="trust-indicators">
+                    Used in production by teams at <strong>Vercel</strong>, <strong>MasterClass</strong>, and <strong>Zendesk</strong>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="graph-container">
+                    <canvas id="complexityGraph"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Examples -->
+    <section class="examples-section">
+        <div class="section-container">
+            <h2 class="section-title">See Effect in action</h2>
+            <p class="section-subtitle">Interactive examples - tap the following effects to run, interrupt, or reset them.</p>
+            <div class="examples-grid">
+                <div class="example-card" onclick="runExample(this, 'succeed')">
+                    <h3><span class="status-dot"></span> Effect.succeed</h3>
+                    <p>Create an effect that always succeeds</p>
+                </div>
+                <div class="example-card" onclick="runExample(this, 'fail')">
+                    <h3><span class="status-dot"></span> Effect.fail</h3>
+                    <p>Create an effect that represents an error</p>
+                </div>
+                <div class="example-card" onclick="runExample(this, 'die')">
+                    <h3><span class="status-dot"></span> Effect.die</h3>
+                    <p>Create an effect with unrecoverable error</p>
+                </div>
+                <div class="example-card" onclick="runExample(this, 'sync')">
+                    <h3><span class="status-dot"></span> Effect.sync</h3>
+                    <p>Wrap synchronous side effects</p>
+                </div>
+                <div class="example-card" onclick="runExample(this, 'promise')">
+                    <h3><span class="status-dot"></span> Effect.promise</h3>
+                    <p>Convert promises to effects</p>
+                </div>
+                <div class="example-card" onclick="runExample(this, 'sleep')">
+                    <h3><span class="status-dot"></span> Effect.sleep</h3>
+                    <p>Delay execution for a duration</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem-section">
+        <div class="problem-background">PROBLEMS</div>
+        <div class="section-container problem-content">
+            <h2 class="section-title">TypeScript doesn't scale on its own</h2>
+            <p class="section-subtitle">You build with Promises, singletons, and utility libraries. It works… until your app grows.</p>
+            <div class="terminal">
+                <div class="terminal-line"><span class="prompt">$</span> npm start</div>
+                <div class="terminal-line"><span class="error">></span> Async flows turn into spaghetti</div>
+                <div class="terminal-line"><span class="error">></span> Errors go uncaught until production</div>
+                <div class="terminal-line"><span class="error">></span> Tests become painful</div>
+                <div class="terminal-line"><span class="error">></span> Global state leaks across modules</div>
+                <div class="terminal-line"><span class="error">></span> Logs tell you something failed—but not what or where</div>
+            </div>
+            <p style="margin-top: 32px; font-size: 20px;">Effect gives you the runtime layer TypeScript was missing.</p>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits-section">
+        <div class="section-container">
+            <h2 class="section-title">Designed for real-world complexity. Built for scale.</h2>
+            <p class="section-subtitle">Effect is what you wish existed when your codebase hit 10K lines.</p>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h3><span class="check">✓</span> Dependency injection</h3>
+                    <p>No decorators, no magic. Just services you declare, provide, and test.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3><span class="check">✓</span> Structured concurrency</h3>
+                    <p>Fork, cancel, race, supervise—then trace it all in real time.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3><span class="check">✓</span> Errors as first-class values</h3>
+                    <p>Every function tracks not just what it returns—but what can go wrong.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3><span class="check">✓</span> Resilience</h3>
+                    <p>Retries, timeouts, circuit breakers, backoffs—out of the box.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3><span class="check">✓</span> Built-in observability</h3>
+                    <p>OpenTelemetry, logs, traces by default.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3><span class="check">✓</span> Batteries actually included</h3>
+                    <p>Schema validation, resource management, config parsing, state, cron, streams, and more.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Section -->
+    <section class="ai-section">
+        <div class="section-container">
+            <h2 class="section-title">Effect for AI</h2>
+            <p class="section-subtitle">LLM workflows, agents, and pipelines are complex. They require retries, fallbacks, streaming, cancellation, and tracing—all in one place.</p>
+            
+            <div class="ai-content">
+                <div class="ai-features">
+                    <h3>Effect gives AI systems a safe, testable runtime:</h3>
+                    <ul class="feature-list">
+                        <li><span class="bullet">→</span> Fork & cancel tool calls or model chains</li>
+                        <li><span class="bullet">→</span> Retry and fallback with typed error handling</li>
+                        <li><span class="bullet">→</span> Inject and swap models or APIs for testing</li>
+                        <li><span class="bullet">→</span> Trace every step automatically—no boilerplate</li>
+                    </ul>
+                </div>
+                
+                <div class="ai-visual">
+                    <div class="pipeline-visualization">
+                        <div class="pipeline-node" style="animation-delay: 0s;">
+                            <div class="node-icon">📝</div>
+                            <div class="node-label">Prompt</div>
+                        </div>
+                        <div class="pipeline-arrow">→</div>
+                        <div class="pipeline-node" style="animation-delay: 0.2s;">
+                            <div class="node-icon">🔄</div>
+                            <div class="node-label">Retry</div>
+                        </div>
+                        <div class="pipeline-arrow">→</div>
+                        <div class="pipeline-node" style="animation-delay: 0.4s;">
+                            <div class="node-icon">🤖</div>
+                            <div class="node-label">LLM</div>
+                        </div>
+                        <div class="pipeline-arrow">→</div>
+                        <div class="pipeline-node" style="animation-delay: 0.6s;">
+                            <div class="node-icon">📊</div>
+                            <div class="node-label">Trace</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="ai-testimonials">
+                <div class="testimonial-card">
+                    <p>Used at MasterClass to orchestrate real-time voice AI</p>
+                    <a href="#" class="podcast-link">👉 Watch the podcast →</a>
+                </div>
+                <div class="testimonial-card">
+                    <p>Powering 14.ai customer support system</p>
+                    <a href="#" class="podcast-link">👉 Watch the podcast →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Production Usage Section -->
+    <section class="production-section">
+        <div class="section-container">
+            <h2 class="section-title">Effect in production</h2>
+            <div class="production-grid">
+                <div class="production-card">
+                    <div class="company-name">Vercel</div>
+                    <div class="use-case">Effect for infrastructure</div>
+                    <a href="#" class="talk-link">Watch Dillon's talk →</a>
+                </div>
+                <div class="production-card">
+                    <div class="company-name">Zendesk</div>
+                    <div class="use-case">Effect for backend</div>
+                    <a href="#" class="talk-link">Listen to Attila's podcast →</a>
+                </div>
+                <div class="production-card">
+                    <div class="company-name">DXOS</div>
+                    <div class="use-case">Effect for platforms</div>
+                    <a href="#" class="talk-link">Watch Dima's talk →</a>
+                </div>
+                <div class="production-card">
+                    <div class="company-name">Expand.ai</div>
+                    <div class="use-case">Effect for AI agents</div>
+                    <a href="#" class="talk-link">Watch Tim Suchanek's talk →</a>
+                </div>
+            </div>
+            
+            <div class="company-logos">
+                <p>Other companies using Effect in production:</p>
+                <div class="logo-grid">
+                    <div class="logo-placeholder">Company</div>
+                    <div class="logo-placeholder">Company</div>
+                    <div class="logo-placeholder">Company</div>
+                    <div class="logo-placeholder">Company</div>
+                    <div class="logo-placeholder">Company</div>
+                    <div class="logo-placeholder">Company</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Indicators Section -->
+    <section class="trust-section">
+        <div class="section-container">
+            <h2 class="section-title">What developers are saying</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial">
+                    <blockquote>"After 6 months with Effect, we've had zero production incidents."</blockquote>
+                    <cite>Senior Engineer, Vercel</cite>
+                </div>
+                <div class="testimonial">
+                    <blockquote>"Effect transformed how we handle async operations. Our error rates dropped by 90%."</blockquote>
+                    <cite>Tech Lead, MasterClass</cite>
+                </div>
+                <div class="testimonial">
+                    <blockquote>"The dependency injection alone saved us weeks of refactoring time."</blockquote>
+                    <cite>Principal Engineer, Zendesk</cite>
+                </div>
+                <div class="testimonial">
+                    <blockquote>"Our junior developers ship production-ready code from day one with Effect."</blockquote>
+                    <cite>CTO, AI Startup</cite>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof Bar -->
+    <section class="social-proof-bar">
+        <div class="section-container">
+            <div class="metrics">
+                <div class="metric">
+                    <div class="metric-number">15K+</div>
+                    <div class="metric-label">GitHub Stars</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-number">1M+</div>
+                    <div class="metric-label">Weekly Downloads</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-number">4.8K+</div>
+                    <div class="metric-label">Community Members</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- State of JS Section -->
+    <section class="state-of-js-section">
+        <div class="section-container">
+            <div class="state-grid">
+                <div class="state-content">
+                    <h2 class="state-title">The missing <span class="highlight">standard library</span> for TypeScript</h2>
+                    <p class="state-description">
+                        TypeScript/JavaScript, the most popular programming language, is still missing a standard library. Effect fills that gap with a solid foundation of data structures, utilities, and abstractions.
+                    </p>
+                    <p class="state-source">Based on <a href="#" class="source-link">2022 State of JavaScript survey</a></p>
+                </div>
+                
+                <div class="state-stats">
+                    <div class="state-header">
+                        <span class="effect-badge">⚡ Effect</span>
+                        <h3>Most desired JS features</h3>
+                    </div>
+                    
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-name">Standard Library</div>
+                            <div class="feature-bar">
+                                <div class="feature-progress" style="width: 95%"></div>
+                                <span class="feature-percent">95%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-name">Immutable Data Structures</div>
+                            <div class="feature-bar">
+                                <div class="feature-progress" style="width: 88%"></div>
+                                <span class="feature-percent">88%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-name">Observability</div>
+                            <div class="feature-bar">
+                                <div class="feature-progress" style="width: 82%"></div>
+                                <span class="feature-percent">82%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-name">Pipe Operator</div>
+                            <div class="feature-bar">
+                                <div class="feature-progress" style="width: 76%"></div>
+                                <span class="feature-percent">76%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-name">Pattern Matching</div>
+                            <div class="feature-bar">
+                                <div class="feature-progress" style="width: 71%"></div>
+                                <span class="feature-percent">71%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Foundation Section -->
+    <section class="technical-section">
+        <div class="section-container">
+            <h2 class="section-title">How Effect works</h2>
+            <p class="section-subtitle">A complete system—not just utilities</p>
+            
+            <div class="pillars-grid">
+                <div class="pillar">
+                    <h3>Effects</h3>
+                    <p>Composable, declarative descriptions of what your program does. Think Promises—supercharged with typed errors, tracked dependencies, and interruption.</p>
+                    <pre><code>const program = pipe(
+  getUserById(id),
+  Effect.flatMap(checkPermissions),
+  Effect.retry(retryPolicy),
+  Effect.timeout("5 seconds")
+)</code></pre>
+                    <a href="#" class="docs-link">Learn more →</a>
+                </div>
+                
+                <div class="pillar">
+                    <h3>Runtime</h3>
+                    <p>A lightweight, fiber-based runtime that powers structured concurrency, and resource management, and deterministic workflows.</p>
+                    <pre><code>Effect.runPromise(program)
+  .then(console.log)
+  .catch(console.error)
+
+// Or with custom runtime
+Runtime.runSync(customRuntime)(program)</code></pre>
+                    <a href="#" class="docs-link">Learn more →</a>
+                </div>
+                
+                <div class="pillar">
+                    <h3>Schema</h3>
+                    <p>Define data once. Use it for parsing, validation, serialization, migration, and more. Schema is your source of truth across boundaries.</p>
+                    <pre><code>const User = Schema.Struct({
+  id: Schema.UUID,
+  email: Schema.Email,
+  role: Schema.Literal("admin", "user")
+})</code></pre>
+                    <a href="#" class="docs-link">Learn more →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Section -->
+    <section class="video-section">
+        <div class="section-container">
+            <h2 class="section-title">See Effect in action</h2>
+            <p class="section-subtitle">Watch how Effect transforms the way you build TypeScript applications</p>
+            
+            <div class="video-container">
+                <div class="video-placeholder">
+                    <div class="play-button">
+                        <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="40" cy="40" r="40" fill="var(--accent-green)" opacity="0.1"/>
+                            <circle cx="40" cy="40" r="36" stroke="var(--accent-green)" stroke-width="2"/>
+                            <path d="M32 26L52 40L32 54V26Z" fill="var(--accent-green)"/>
+                        </svg>
+                    </div>
+                    <div class="video-info">
+                        <h3>Effect: A New Approach to TypeScript</h3>
+                        <p>15 min introduction • By the Effect team</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="video-cta">
+                <p>Want to dive deeper?</p>
+                <a href="#" class="btn-secondary">Watch the full workshop →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="section-container">
+            <h2 class="section-title">FAQ</h2>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Why does Effect's syntax look different from typical TypeScript?
+                </div>
+                <div class="faq-answer">
+                    <p>Effect code looks strange at first—like a whole new language inside TypeScript. But there's a reason for that.</p>
+                    <p style="margin-top: 16px;">That "weirdness" unlocks:</p>
+                    <ul style="margin-top: 8px; padding-left: 20px;">
+                        <li>Typed, composable errors</li>
+                        <li>Dependency injection with no globals</li>
+                        <li>Interruptible workflows</li>
+                        <li>Business logic you can reason about, reuse, and test in isolation</li>
+                    </ul>
+                    <p style="margin-top: 16px;">It's not overengineering. It's engineering that holds up under pressure.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Is this over-engineering? Do I have to know FP?
+                </div>
+                <div class="faq-answer">
+                    <p>No and no. Matt Pocock explains this best in his video on why he changed his mind about Effect.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Who's using Effect in production?
+                </div>
+                <div class="faq-answer">
+                    <p>Vercel, MasterClass, Zendesk, and many more are using Effect to run critical infrastructure, AI systems, and customer workflows at scale.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leverage AI with Effect Section -->
+    <section class="ai-leverage-section">
+        <div class="section-container">
+            <h2 class="section-title">Claude writes Effect like a pro—out of the box</h2>
+            <p class="section-subtitle">Effect's structured design makes it perfect for AI-assisted development. No more debugging LLM-generated spaghetti code.</p>
+            
+            <div class="ai-leverage-content">
+                <div class="ai-leverage-features">
+                    <h3>With Effect MCP (Model Context Protocol), Claude understands:</h3>
+                    <ul class="feature-list">
+                        <li><span class="bullet">→</span> How to compose effects properly</li>
+                        <li><span class="bullet">→</span> When to handle errors vs propagate them</li>
+                        <li><span class="bullet">→</span> Where to inject dependencies</li>
+                        <li><span class="bullet">→</span> Why your code needs certain patterns</li>
+                    </ul>
+                    
+                    <div class="ai-benefits">
+                        <div class="ai-benefit">
+                            <div class="benefit-icon">✅</div>
+                            <div>
+                                <h4>Predictable patterns</h4>
+                                <p>Generators and yield* guide the AI toward correct compositions</p>
+                            </div>
+                        </div>
+                        <div class="ai-benefit">
+                            <div class="benefit-icon">✅</div>
+                            <div>
+                                <h4>Self-documenting code</h4>
+                                <p>Type signatures tell the full story: inputs, outputs, errors, dependencies</p>
+                            </div>
+                        </div>
+                        <div class="ai-benefit">
+                            <div class="benefit-icon">✅</div>
+                            <div>
+                                <h4>Instant feedback</h4>
+                                <p>Effect's compiler catches AI mistakes before you do</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ai-code-demo">
+                    <h3>Try it now</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-file">example.ts</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="comment">// Ask Claude: "Create a service that fetches user data with retry and caching"</span>
+<span class="keyword">import</span> { Effect, Context, Layer } <span class="keyword">from</span> <span class="string">"effect"</span>
+
+<span class="comment">// Claude will generate idiomatic Effect code with:</span>
+<span class="comment">// - Proper service definitions</span>
+<span class="comment">// - Tagged errors</span>
+<span class="comment">// - Retry policies</span>
+<span class="comment">// - Clean dependency injection</span></code></pre>
+                    </div>
+                    
+                    <div class="cta-buttons" style="margin-top: 24px;">
+                        <a href="#" class="btn-primary">Install Effect MCP →</a>
+                        <a href="#" class="btn-secondary">See Examples</a>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-top: 12px; font-size: 14px;">Get started in 30 seconds</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="section-container">
+            <h2>Ready to build production-grade software?</h2>
+            <p>Join thousands of developers writing reliable TypeScript apps with Effect.</p>
+            <div class="cta-buttons" style="justify-content: center;">
+                <a href="#" class="btn-primary">Get Started →</a>
+                <a href="#" class="btn-secondary">⭐ Star on GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Graph Animation
+        const canvas = document.getElementById('complexityGraph');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        function drawGraph() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Grid
+            ctx.strokeStyle = '#262626';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < canvas.width; i += 50) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+            }
+            for (let i = 0; i < canvas.height; i += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(canvas.width, i);
+                ctx.stroke();
+            }
+            
+            // Axes
+            ctx.strokeStyle = '#737373';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(50, canvas.height - 50);
+            ctx.lineTo(canvas.width - 50, canvas.height - 50);
+            ctx.moveTo(50, 50);
+            ctx.lineTo(50, canvas.height - 50);
+            ctx.stroke();
+            
+            // Labels
+            ctx.fillStyle = '#737373';
+            ctx.font = '12px monospace';
+            ctx.fillText('1K', 50, canvas.height - 30);
+            ctx.fillText('10K', 150, canvas.height - 30);
+            ctx.fillText('100K', 250, canvas.height - 30);
+            ctx.fillText('1M', 350, canvas.height - 30);
+            ctx.fillText('Lines of Code', canvas.width / 2 - 40, canvas.height - 10);
+            
+            // Animated curves
+            const progress = (Date.now() % 3000) / 3000;
+            
+            // Effect curve (green, linear)
+            ctx.strokeStyle = '#22C55E';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(50, canvas.height - 100);
+            for (let x = 0; x <= progress * 300; x += 5) {
+                const y = canvas.height - 100 - (x * 0.3);
+                ctx.lineTo(50 + x, y);
+            }
+            ctx.stroke();
+            
+            // Without Effect curve (red, exponential)
+            ctx.strokeStyle = '#EF4444';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(50, canvas.height - 100);
+            for (let x = 0; x <= progress * 300; x += 5) {
+                const y = canvas.height - 100 - (Math.pow(x / 50, 2) * 10);
+                ctx.lineTo(50 + x, y);
+            }
+            ctx.stroke();
+            
+            requestAnimationFrame(drawGraph);
+        }
+        
+        drawGraph();
+        
+        // Interactive Examples
+        function runExample(card, type) {
+            card.classList.add('running');
+            const dot = card.querySelector('.status-dot');
+            
+            setTimeout(() => {
+                card.classList.remove('running');
+                if (type === 'fail' || type === 'die') {
+                    dot.classList.add('error');
+                } else {
+                    dot.classList.add('success');
+                }
+                
+                setTimeout(() => {
+                    dot.classList.remove('success', 'error');
+                }, 2000);
+            }, 2000);
+        }
+        
+        // FAQ Toggle
+        function toggleFAQ(question) {
+            const item = question.parentElement;
+            item.classList.toggle('open');
+        }
+        
+        // Copy code function
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-block');
+            const code = codeBlock.querySelector('code').textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = 'var(--accent-green)';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 2000);
+            });
+        }
+        
+        // Video Player
+        document.querySelector('.video-placeholder').addEventListener('click', function() {
+            const container = document.querySelector('.video-container');
+            const iframe = document.createElement('iframe');
+            iframe.className = 'video-embed';
+            iframe.src = 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1'; // Replace with actual video ID
+            iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+            iframe.allowFullscreen = true;
+            
+            container.classList.add('playing');
+            container.appendChild(iframe);
+        });
+    </script>
+</body>
+</html>
