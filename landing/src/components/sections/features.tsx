@@ -13,13 +13,13 @@ export const Features = () => {
             <h3 className="font-display text-xl text-white">Powerful building blocks</h3>
           </div>
           <p className="my-6">
-            Every part of the Effect ecosystem is designed to be composable.
-            The Effect primitives can be combined in many different ways to
-            tackle the most complex problems.
+            Build complex applications from simple, composable primitives. Effect's 
+            functional building blocks eliminate entire classes of bugs while making 
+            your code more testable and maintainable.
           </p>
-          <Checklist items={['Immutable data structures', 'Asynchronous queues & pub-sub', 'Configuration & dependency management']} />
+          <Checklist items={['Type-safe streams and async operations', 'Built-in resource management and cleanup', 'Composable dependency injection system']} />
           <Button href="/docs" secondary className="mt-10">
-            Read documentation
+            Explore building blocks
           </Button>
         </div>
         <div>
@@ -28,12 +28,13 @@ export const Features = () => {
             <h3 className="font-display text-xl text-white">No more one-off dependencies</h3>
           </div>
           <p className="my-6">
-            With Effect the batteries are included. Regardless of the
-            application, your package.json will have never been this small.
+            Replace dozens of npm packages with a single, cohesive ecosystem. 
+            Effect provides everything you need: validation, HTTP, databases, 
+            CLI tools, and more - all designed to work together seamlessly.
           </p>
-          <Checklist items={['Data validation & serialization', 'Frameworks for CLI & HTTP applications', 'Powerful abstractions for every platform']} />
+          <Checklist items={['Replace 20+ packages with unified ecosystem', 'Zero-config validation with @effect/schema', 'Full-stack HTTP with type-safe APIs']} />
           <Button href="/docs" secondary className="mt-10">
-            Read documentation
+            Browse ecosystem
           </Button>
         </div>
         <div>
@@ -42,12 +43,13 @@ export const Features = () => {
             <h3 className="font-display text-xl text-white">Never try & catch again</h3>
           </div>
           <p className="my-6">
-            Effect doesn&apos;t shy away from errors &mdash; it embraces them as a fact of life.
-            Successfully handle failure with the built-in error-handling primitives.
+            Eliminate runtime crashes with structured error handling. Effect treats 
+            errors as typed values, making them explicit and recoverable. No more 
+            unhandled exceptions bringing down your application.
           </p>
-          <Checklist items={['Type-safe errors as values', 'Powerful retry & recovery APIs', 'Tools for logging & tracing']} />
+          <Checklist items={['Errors tracked at compile-time in type system', 'Configurable retry policies (exponential, fibonacci, etc.)', 'Built-in circuit breakers and timeouts']} />
           <Button href="/docs" secondary className="mt-10">
-            Read documentation
+            Learn error handling
           </Button>
         </div>
       </div>

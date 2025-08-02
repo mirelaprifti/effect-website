@@ -1,0 +1,133 @@
+---
+title: Effect Design System
+description: Design principles and guidelines for the Effect ecosystem
+---
+
+# Effect Design System
+
+Effect's design system is built on principles of clarity, performance, and developer experience. Our visual language reflects the library's core values: type safety, composability, and elegance.
+
+## Core Principles
+
+### 1. **Functional Aesthetics**
+Just as Effect brings functional programming to TypeScript, our design brings functional principles to visual communication. Every element serves a purpose, with no unnecessary decoration.
+
+### 2. **Type-Safe Design**
+Our design system mirrors Effect's type safety through consistent, predictable patterns. Components follow strict guidelines ensuring visual consistency across all touchpoints.
+
+### 3. **Composable Elements**
+Like Effect's compositional programming model, our design elements are modular and composable. Small, reusable components combine to create complex interfaces.
+
+## Visual Identity
+
+### Typography
+
+Our typography system emphasizes readability and hierarchy:
+
+- **Display**: Bold, confident headings that command attention
+- **Body**: Clear, readable text optimized for documentation
+- **Code**: Monospace fonts that make code examples stand out
+
+### Color Palette
+
+Effect's color palette balances professionalism with approachability:
+
+- **Primary**: Deep blue representing trust and stability
+- **Accent**: Vibrant highlights for interactive elements
+- **Semantic**: Clear colors for success, warning, and error states
+- **Neutral**: Grays for backgrounds and secondary content
+
+### Spacing & Layout
+
+We use an 8-point grid system ensuring consistent spacing:
+
+- **Tight** (4px): For related elements
+- **Default** (8px): Standard spacing
+- **Loose** (16px): Between sections
+- **Spacious** (32px+): Major section breaks
+
+## Component Patterns
+
+### Interactive Elements
+
+All interactive components follow these principles:
+
+- **Clear affordances**: Users know what's clickable
+- **Responsive feedback**: Immediate visual response to interactions
+- **Accessible**: Keyboard navigable with clear focus states
+
+### Code Examples
+
+Code is a first-class citizen in Effect's design:
+
+```typescript
+// Syntax highlighting that matches our brand
+const program = Effect.gen(function* () {
+  const result = yield* Effect.succeed(42)
+  return result
+})
+```
+
+### Documentation Layout
+
+Our documentation design prioritizes:
+
+- **Scannable content**: Clear headings and sections
+- **Progressive disclosure**: Complex topics revealed gradually
+- **Interactive learning**: Embedded playgrounds for experimentation
+
+## Motion & Animation
+
+Animations in Effect are:
+
+- **Purposeful**: Every animation has a functional reason
+- **Performant**: No animation at the cost of performance
+- **Subtle**: Enhancing, not distracting from content
+
+## Dark Mode
+
+Effect embraces dark mode as a first-class experience:
+
+- **True blacks**: OLED-friendly dark backgrounds
+- **Reduced eye strain**: Carefully balanced contrast
+- **Consistent experience**: Same design quality in both modes
+
+## Accessibility
+
+Accessibility is non-negotiable:
+
+- **WCAG AA compliance**: Minimum standard for all elements
+- **Screen reader friendly**: Semantic HTML and ARIA labels
+- **Keyboard navigation**: Full functionality without a mouse
+- **Color blind safe**: Important information never relies on color alone
+
+## Implementation
+
+### CSS Architecture
+
+We use modern CSS with:
+
+- **CSS Variables**: For theming and consistency
+- **Tailwind CSS**: For utility-first styling
+- **CSS Modules**: For component isolation
+
+### Component Library
+
+Our components are built with:
+
+- **React**: For interactive UI
+- **Radix UI**: For accessible primitives
+- **Framer Motion**: For thoughtful animations
+
+## Contributing
+
+When designing for Effect:
+
+1. **Start with function**: What problem does this solve?
+2. **Ensure consistency**: Does this fit our existing patterns?
+3. **Test accessibility**: Can everyone use this?
+4. **Optimize performance**: Is this the lightest solution?
+
+---
+
+This design system is a living document. As Effect evolves, so too will our design language, always maintaining our core principles of clarity, performance, and developer experience.

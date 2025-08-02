@@ -1,0 +1,13 @@
+{
+  "name": "effect-website-specs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Specifications and design documents for Effect website",
+  "scripts": {
+    "dev": "cd ../landing && pnpm dev",
+    "dev:content": "cd ../content && pnpm dev",
+    "build": "cd ../landing && pnpm build",
+    "build:content": "cd ../content && pnpm build"
+  },
+  "packageManager": "pnpm@9.12.2+sha1.3012e6dd27e70ec4e185be062e8a124523dccfc4"
+}
